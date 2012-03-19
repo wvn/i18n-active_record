@@ -45,19 +45,19 @@ module I18n
             interpolations = options.keys - I18n::RESERVED_KEYS
             keys = count ? I18n.t('i18n.plural.keys', :locale => locale).map { |k| [key, k].join(FLATTEN_SEPARATOR) } : [key]
             keys.each { |key|
-              value = simple_backend.send(:lookup, locale.to_s, "#{locale.to_s}.#{key}")
+            value = simple_backend.send(:lookup, "#{locale}", "#{key}")
               if value.nil?
-                value = simple_backend.send(:lookup, "en", "en.#{key}")
+                value = simple_backend.send(:lookup, "en", "#{key}")
               end
 
-              store_default_translation(locale, key, value, interpolations)
+              store_default_translation(locale, key, "#{value}", interpolations)
             }
           end
         end
 
         def store_default_translation(locale, key, value, interpolations)
-          translation = ActiveRecord::Translation.new :locale => locale.to_s, :key => key, :value => value.to_s
-          translation.interpolations = interpolations
+          translation = ActiveRecord::Translation.new :locale => locale.to_s, :key => key, :value => value
+          #translation.interpolations = interpolations
           translation.save
         end
 

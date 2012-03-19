@@ -50,7 +50,7 @@ module I18n
         FALSY_CHAR = "\002"
 
         set_table_name 'translations'
-        attr_protected :is_proc, :interpolations
+        #attr_protected :is_proc, :interpolations
 
         serialize :value
         serialize :interpolations, Array
