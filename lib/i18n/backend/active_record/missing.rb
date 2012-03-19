@@ -36,6 +36,7 @@ module I18n
         include Flatten
 
         def store_default_translations(locale, key, options = {})
+          simple_backend = I18n::Backend::Simple.new
           count, scope, default, separator = options.values_at(:count, :scope, :default, :separator)
           separator ||= I18n.default_separator
           key = normalize_flat_keys(locale, key, scope, separator)
@@ -43,12 +44,19 @@ module I18n
           unless ActiveRecord::Translation.locale(locale).lookup(key).exists?
             interpolations = options.keys - I18n::RESERVED_KEYS
             keys = count ? I18n.t('i18n.plural.keys', :locale => locale).map { |k| [key, k].join(FLATTEN_SEPARATOR) } : [key]
-            keys.each { |key| store_default_translation(locale, key, interpolations) }
+            keys.each { |key|
+              value = simple_backend.send(:lookup, locale, key)
+              if value.nil?
+                value = simple_backend.send(:lookup, "en", key)
+              end
+
+              store_default_translation(locale, key, value, interpolations)
+            }
           end
         end
 
-        def store_default_translation(locale, key, interpolations)
-          translation = ActiveRecord::Translation.new :locale => locale.to_s, :key => key
+        def store_default_translation(locale, key, value, interpolations)
+          translation = ActiveRecord::Translation.new :locale => locale.to_s, :key => key, :value => value.to_s
           translation.interpolations = interpolations
           translation.save
         end
@@ -62,5 +70,6 @@ module I18n
       end
     end
   end
+
 end
 

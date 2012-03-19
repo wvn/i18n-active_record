@@ -1,5 +1,7 @@
 require 'i18n/backend/base'
 require 'i18n/backend/active_record/translation'
+require 'i18n/backend/import'
+#require "tasks/active_record.rake"
 
 module I18n
   module Backend
