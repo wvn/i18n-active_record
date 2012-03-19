@@ -45,7 +45,7 @@ module I18n
             interpolations = options.keys - I18n::RESERVED_KEYS
             keys = count ? I18n.t('i18n.plural.keys', :locale => locale).map { |k| [key, k].join(FLATTEN_SEPARATOR) } : [key]
             keys.each { |key|
-              value = simple_backend.send(:lookup, locale, key)
+              value = simple_backend.send(:lookup, locale.to_s, key)
               if value.nil?
                 value = simple_backend.send(:lookup, "en", key)
               end
